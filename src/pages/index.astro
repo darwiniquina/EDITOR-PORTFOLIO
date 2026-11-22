@@ -98,7 +98,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     </span>
     {
       [["#", "Top"], ["#filters", "Work"], ["#contact", "Contact"]].map(([href, label]) => (
-        <a href={href} class="pointer-events-none absolute right-16 -translate-y-1/2 font-mono text-base font-medium uppercase tracking-wider text-(--ruler)/70 opacity-0 transition-all focus-visible:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:text-xl group-hover:opacity-100 hover:underline">
+        <a href={href} class="pointer-events-none absolute right-10 rotate-180 [writing-mode:vertical-rl] font-mono text-base font-medium uppercase tracking-wider text-(--ruler)/70 opacity-0 transition-all focus-visible:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:text-xl group-hover:opacity-100 hover:underline">
           {label}
         </a>
       ))
@@ -118,7 +118,10 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       labels.forEach((a) => {
         const el = a.hash.length > 1 ? document.querySelector(a.hash) : null;
         const start = el ? el.getBoundingClientRect().top + scrollY : 0;
-        a.style.top = `${toY(Math.min(start / max(), 1))}px`;
+        const p = Math.min(start / max(), 1);
+        a.style.top = `${toY(p)}px`;
+        // Vertical text hangs below the point at the top of the page and above it at the bottom, so it never leaves the screen.
+        a.style.translate = `0 -${p * 100}%`;
       });
       moveThumb();
     };

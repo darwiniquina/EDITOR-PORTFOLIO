@@ -17,6 +17,8 @@ export const HOOK_2 = { before: "I make", mark: "every second", after: "count." 
 export const CTA_TEXT = "Let's work together";
 // Same Google Form as the main portfolio: a generic enquiry form that goes to the email inbox.
 export const FORM_URL = "https://forms.gle/FqZkvhExoeAXCb5T7";
+// WhatsApp wants the international form: 09452607161 becomes 639452607161.
+export const WHATSAPP_URL = "https://wa.me/639452607161";
 export const CTA_HREF = `mailto:${EMAIL}?subject=Video%20project`;
 
 // Looping hero banner (muted, 1920x720, about 1.75 MB) and the poster shown before it plays.
