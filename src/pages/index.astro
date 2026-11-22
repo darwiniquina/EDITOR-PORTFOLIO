@@ -1,11 +1,11 @@
 ---
 import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
-import { parseVideo } from "../lib/video";
-import { CTA_HREF, CTA_TEXT, HOOK_1, HOOK_2, REEL, REEL_POSTER } from "../lib/site";
+import { CATEGORIES, CTA_HREF, CTA_TEXT, HOOK_1, HOOK_2, REEL, REEL_POSTER } from "../lib/site";
 
 const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.order);
+// Only offer a chip for categories that have at least one project.
+const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.data.category === key));
 ---
 
 <Base>
@@ -44,29 +44,97 @@ const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.
     </div>
   </section>
 
-  <section id="work" class="mt-12 grid gap-x-3 gap-y-8 px-5 sm:grid-cols-2 lg:grid-cols-4">
+  {/* Vertical reels: 9:16 cards. Clips loop on their own; hovering a card darkens it with a play button. Clicking still just opens the project page. */}
+  {/* Big type selector. A purple block (same colour as the hero highlight) slides under the active option. */}
+  <div class="mt-12 px-5">
+    <div id="filters" role="group" aria-label="Filter by type" class="group relative flex flex-wrap items-center gap-x-1 gap-y-1 border-y-2 border-fg py-4">
+      <span id="filter-pill" aria-hidden="true" class="absolute left-0 top-0 h-0 w-0 bg-[#7c6fe0] transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none">
+        <span class="absolute -left-1.5 -top-1.5 h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
+        <span class="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
+      </span>
+      {
+        [["all", "All", work.length], ...chips.map(([key, label]) => [key, label, work.filter((w) => w.data.category === key).length])].map(([key, label, count], i) => (
+          <Fragment>
+            {i > 0 && <span aria-hidden="true" class="select-none py-1 text-xl font-bold leading-none text-fg/20 md:text-3xl">/</span>}
+          <button type="button" data-filter={key} aria-pressed={key === "all"} class="relative z-10 whitespace-nowrap px-3 py-1 text-xl font-bold leading-none tracking-tight text-fg/35 transition-colors hover:text-fg md:text-3xl aria-pressed:text-fg group-data-[ready]:aria-pressed:text-white">
+            {label}<sup class="ml-1 font-mono text-[0.6rem] font-normal md:text-sm">{count}</sup>
+          </button>
+          </Fragment>
+        ))
+      }
+    </div>
+  </div>
+
+  <section id="work" class="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 px-5 md:grid-cols-3 lg:grid-cols-5">
     <h2 class="sr-only">Selected work</h2>
     {
-      work.map(({ id, data }, i) => {
-        const thumb = data.thumbnail ?? (data.videoUrl ? parseVideo(data.videoUrl).thumbnail : undefined);
-        return (
-          <a href={`/work/${id}`} class="group block">
-            <div class="aspect-video overflow-hidden rounded-sm bg-surface">
-              {typeof thumb === "string" && (
-                <img src={thumb} alt="" loading="lazy" class="h-full w-full object-cover transition-opacity group-hover:opacity-80" />
-              )}
-              {thumb && typeof thumb !== "string" && (
-                <Image src={thumb} alt="" widths={[400, 800]} class="h-full w-full object-cover transition-opacity group-hover:opacity-80" />
-              )}
-            </div>
-            <p class="mt-3 font-medium">
-              <span class="font-mono text-sm font-normal text-muted">{String(i + 1).padStart(2, "0")}</span>{" "}
-              {data.title}
-            </p>
-            <p class="text-sm text-accent">{data.client}</p>
-          </a>
-        );
-      })
+      work.map(({ id, data }, i) => (
+        <a href={`/work/${id}`} data-category={data.category} class="group block">
+          <div class="relative aspect-[9/16] overflow-hidden rounded-sm bg-surface">
+            <img src={`/previews/${id}.webp`} alt="" width="450" height="800" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+            <video data-src={`/previews/${id}.mp4`} muted loop playsinline preload="none" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover"></video>
+            {/* Play button on hover. Decorative: the whole card is the link. */}
+            <span aria-hidden="true" class="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_center,rgb(0_0_0/0.25),rgb(0_0_0/0.75))] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+              <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-lg">
+                <svg class="ml-0.5 h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+              </span>
+            </span>
+          </div>
+          <p class="mt-3 font-medium">
+            <span class="font-mono text-sm font-normal text-muted">{String(i + 1).padStart(2, "0")}</span>{" "}
+            {data.title}
+          </p>
+          {data.client && <p class="text-sm text-accent">{data.client}</p>}
+        </a>
+      ))
     }
   </section>
+
+  <script>
+    // Chips show or hide cards by category. Hidden cards leave the screen, so their clips pause on their own.
+    const bar = document.getElementById("filters")!;
+    const pill = document.getElementById("filter-pill")!;
+    const chipButtons = document.querySelectorAll<HTMLButtonElement>("#filters button");
+    const movePill = () => {
+      const active = bar.querySelector<HTMLElement>("[aria-pressed=true]")!;
+      pill.style.left = `${active.offsetLeft}px`;
+      pill.style.top = `${active.offsetTop}px`;
+      pill.style.width = `${active.offsetWidth}px`;
+      pill.style.height = `${active.offsetHeight}px`;
+    };
+    chipButtons.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        chipButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        movePill();
+        document.querySelectorAll<HTMLElement>("#work a").forEach((card) => {
+          card.hidden = btn.dataset.filter !== "all" && card.dataset.category !== btn.dataset.filter;
+        });
+      }),
+    );
+    // Place the pill once the font has loaded (widths change), then keep it right on resize.
+    document.fonts.ready.then(() => {
+      movePill();
+      bar.dataset.ready = "";
+    });
+    addEventListener("resize", movePill);
+  </script>
+
+  <script>
+    // Clips play on their own, fetched only when a card nears the screen and paused when it leaves.
+    // Reduced motion keeps the still posters.
+    if (matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach(({ target, isIntersecting }) => {
+            const video = target as HTMLVideoElement;
+            if (isIntersecting) {
+              video.src ||= video.dataset.src!;
+              video.play().catch(() => {});
+            } else video.pause();
+          }),
+        { rootMargin: "200px" },
+      );
+      document.querySelectorAll("#work video").forEach((v) => io.observe(v));
+    }
+  </script>
 </Base>

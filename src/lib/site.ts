@@ -30,3 +30,11 @@ export const SAME_AS = [
   "https://github.com/darwiniquina",
   "https://www.linkedin.com/in/darwin-iqui%C3%B1a-15561328b/",
 ];
+
+// Filter chips on the home grid, in display order. Keys match `category` in the work entries.
+export const CATEGORIES = {
+  ugc: "UGC",
+  "talking-heads": "Talking heads",
+  coaching: "Coaching videos",
+  "real-estate": "Real estate",
+} as const;

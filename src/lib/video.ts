@@ -3,7 +3,7 @@ export function parseVideo(url: string) {
   const u = new URL(url);
 
   if (u.hostname.includes("youtu")) {
-    const id = u.hostname === "youtu.be" ? u.pathname.slice(1) : u.searchParams.get("v");
+    const id = u.hostname === "youtu.be" ? u.pathname.slice(1) : u.pathname.startsWith("/shorts/") ? u.pathname.split("/")[2] : u.searchParams.get("v");
     if (!id) throw new Error(`Unrecognised YouTube URL: ${url}`);
     return {
       embed: `https://www.youtube-nocookie.com/embed/${id}`,

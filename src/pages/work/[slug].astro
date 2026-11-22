@@ -16,13 +16,14 @@ const { Content } = await render(entry);
 const video = data.videoUrl ? parseVideo(data.videoUrl) : undefined;
 const thumbnail = video?.thumbnail;
 
+const name = [data.client, data.title].filter(Boolean).join(" ");
 const pageUrl = new URL(Astro.url.pathname, SITE_URL).href;
 const schema = [
   {
     "@type": "WebPage",
     "@id": pageUrl,
     url: pageUrl,
-    name: `${data.client} ${data.title}`,
+    name,
     isPartOf: { "@id": `${SITE_URL}/#website` },
     mainEntity: { "@id": `${pageUrl}#video` },
   },
@@ -32,8 +33,8 @@ const schema = [
         {
           "@type": "VideoObject",
           "@id": `${pageUrl}#video`,
-          name: `${data.client} ${data.title}`,
-          description: data.description,
+          name,
+          description: data.description ?? name,
           thumbnailUrl: thumbnail,
           uploadDate: data.published,
           embedUrl: video.embed,
@@ -44,22 +45,24 @@ const schema = [
 ];
 ---
 
-<Base title={`${data.client} ${data.title} | ${NAME}`} description={data.description} schema={schema}>
-  <article class="px-5">
-    <div class="aspect-video w-full overflow-hidden rounded-sm bg-surface">
-      {video && <iframe src={video.embed} title={`${data.client} ${data.title}`} loading="lazy" allowfullscreen class="h-full w-full"></iframe>}
+<Base title={`${name} | ${NAME}`} description={data.description} schema={schema}>
+  {/* Reels are vertical: the player is 9:16 and capped by screen height, with the details beside it on desktop. */}
+  <article class="grid gap-8 px-5 md:grid-cols-[auto_1fr] md:items-start md:gap-12">
+    <div class="mx-auto aspect-[9/16] w-full max-w-[calc(80vh*9/16)] overflow-hidden rounded-sm bg-surface md:mx-0 md:w-[calc(80vh*9/16)]">
+      {video ? (
+        <iframe src={video.embed} title={name} loading="lazy" allowfullscreen class="h-full w-full"></iframe>
+      ) : (
+        // shortcut: no full video linked yet, so the 2.5 s preview loops here. Add videoUrl to replace it.
+        <video src={`/previews/${entry.id}.mp4`} poster={`/previews/${entry.id}.webp`} autoplay muted loop playsinline class="h-full w-full object-cover"></video>
+      )}
     </div>
-    <div class="mt-6 grid gap-4 border-t border-line pt-3 md:grid-cols-2">
-      <div>
-        <p class="text-sm text-accent">{data.client}</p>
-        <h1 class="text-2xl font-medium">{data.title}</h1>
-      </div>
-      <div>
-        <p class="text-muted">{data.role} · {data.year}</p>
-        <p class="mt-3">{data.description}</p>
-        <div class="mt-3"><Content /></div>
-      </div>
+    <div class="md:pt-2">
+      {data.client && <p class="text-sm text-accent">{data.client}</p>}
+      <h1 class="text-3xl font-bold md:text-4xl">{data.title}</h1>
+      {(data.role || data.year) && <p class="mt-2 text-muted">{[data.role, data.year].filter(Boolean).join(" · ")}</p>}
+      {data.description && <p class="mt-4 max-w-prose">{data.description}</p>}
+      <div class="mt-4 max-w-prose"><Content /></div>
+      <a href="/#work" class="mt-10 inline-block text-muted hover:text-fg">← All work</a>
     </div>
-    <a href="/#work" class="mt-10 inline-block text-muted hover:text-fg">← All work</a>
   </article>
 </Base>
