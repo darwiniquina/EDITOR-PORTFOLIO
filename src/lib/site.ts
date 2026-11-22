@@ -15,6 +15,8 @@ export const HOOK_2 = { before: "I make", mark: "every second", after: "count." 
 
 // Wording stays open ("video", not "edit") because the work includes UGC-style content too.
 export const CTA_TEXT = "Let's work together";
+// Same Google Form as the main portfolio: a generic enquiry form that goes to the email inbox.
+export const FORM_URL = "https://forms.gle/FqZkvhExoeAXCb5T7";
 export const CTA_HREF = `mailto:${EMAIL}?subject=Video%20project`;
 
 // Looping hero banner (muted, 1920x720, about 1.75 MB) and the poster shown before it plays.

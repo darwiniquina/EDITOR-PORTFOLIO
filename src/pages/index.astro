@@ -46,7 +46,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
 
   {/* Vertical reels: 9:16 cards. Clips loop on their own; hovering a card darkens it with a play button. Clicking still just opens the project page. */}
   {/* Big type selector. A purple block (same colour as the hero highlight) slides under the active option. */}
-  <div class="mt-12 px-5">
+  <div class="mt-12 px-5 md:pr-14">
     <div id="filters" role="group" aria-label="Filter by type" class="group relative flex flex-wrap items-center gap-x-1 gap-y-1 border-y-2 border-fg py-4">
       <span id="filter-pill" aria-hidden="true" class="absolute left-0 top-0 h-0 w-0 bg-[#7c6fe0] transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none">
         <span class="absolute -left-1.5 -top-1.5 h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
@@ -65,7 +65,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     </div>
   </div>
 
-  <section id="work" class="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 px-5 md:grid-cols-3 lg:grid-cols-5">
+  <section id="work" class="mt-6 grid grid-cols-2 gap-x-3 gap-y-8 px-5 md:grid-cols-3 md:pr-14 lg:grid-cols-5">
     <h2 class="sr-only">Selected work</h2>
     {
       work.map(({ id, data }, i) => (
@@ -90,15 +90,15 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     }
   </section>
 
-  {/* Ruler scrollbar. Ticks are decorative; the labels are real links, and click or drag on the ruler seeks. Desktop only. */}
-  <nav id="ruler" aria-label="Page sections" class="group fixed bottom-0 right-0 top-16 z-40 hidden w-36 touch-none md:block">
-    <div aria-hidden="true" class="ruler-ticks absolute inset-0"></div>
+  {/* Ruler scrollbar. Ticks are decorative; the labels are real links, and click or drag on the ruler seeks. Desktop only. The strip is the only part that catches the mouse, and the labels appear when it is hovered. */}
+  <nav id="ruler" aria-label="Page sections" class="group pointer-events-none fixed bottom-0 right-0 top-16 z-40 hidden w-40 touch-none md:block">
+    <div aria-hidden="true" class="ruler-ticks pointer-events-auto absolute inset-y-0 right-0 w-12"></div>
     <span id="ruler-thumb" aria-hidden="true" class="absolute right-0 top-0 h-0.5 w-9 bg-[#7c6fe0]">
       <span class="absolute -left-1.5 -top-[5px] h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
     </span>
     {
       [["#", "Top"], ["#filters", "Work"], ["#contact", "Contact"]].map(([href, label]) => (
-        <a href={href} class="absolute right-8 -translate-y-1/2 font-mono text-base font-medium uppercase tracking-wider text-(--ruler)/70 transition-all group-hover:right-12 group-hover:text-xl hover:underline">
+        <a href={href} class="pointer-events-none absolute right-16 -translate-y-1/2 font-mono text-base font-medium uppercase tracking-wider text-(--ruler)/70 opacity-0 transition-all focus-visible:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:text-xl group-hover:opacity-100 hover:underline">
           {label}
         </a>
       ))
