@@ -14,8 +14,30 @@
   --color-fg: #f2f2f2;
   --color-muted: #8a8a8a;
   --color-line: rgb(255 255 255 / 0.2);
+  --color-surface: #171717;
   /* Dark-theme accent from the darcoded brand. */
   --color-accent: #b49aff;
+}
+
+/* Light theme uses the darcoded brand colors. Utilities read these variables, so overriding them is enough. */
+:root[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-muted: #6b6b6b;
+  --color-line: rgb(0 0 0 / 0.15);
+  --color-surface: #f0eef5;
+  --color-accent: #6847c7;
+  color-scheme: light;
+}
+
+:root:not([data-theme="light"]) {
+  color-scheme: dark;
+}
+
+/* Show an element in one theme only (logo variants, toggle label). */
+:root[data-theme="light"] .show-dark,
+:root:not([data-theme="light"]) .show-light {
+  display: none;
 }
 
 html {

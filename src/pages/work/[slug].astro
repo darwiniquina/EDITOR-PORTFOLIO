@@ -46,7 +46,7 @@ const schema = [
 
 <Base title={`${data.client} ${data.title} | ${NAME}`} description={data.description} schema={schema}>
   <article class="px-5">
-    <div class="aspect-video w-full overflow-hidden rounded-sm bg-neutral-900">
+    <div class="aspect-video w-full overflow-hidden rounded-sm bg-surface">
       {video && <iframe src={video.embed} title={`${data.client} ${data.title}`} loading="lazy" allowfullscreen class="h-full w-full"></iframe>}
     </div>
     <div class="mt-6 grid gap-4 border-t border-line pt-3 md:grid-cols-2">

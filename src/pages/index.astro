@@ -3,19 +3,22 @@ import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import { parseVideo } from "../lib/video";
-import { PROFILE, REEL } from "../lib/site";
+import { PROFILE, REEL, REEL_POSTER } from "../lib/site";
 
 const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Base>
-  <section class="relative h-[70vh] min-h-[360px] w-full overflow-hidden bg-neutral-900">
-    {REEL && <video src={REEL} autoplay muted loop playsinline class="h-full w-full object-cover"></video>}
-  </section>
-
-  <section id="profile" class="mx-5 grid gap-4 border-t border-line pt-3 md:grid-cols-2">
-    <h2 class="text-muted">Profile</h2>
-    <p class="normal-case">{PROFILE}</p>
+  {/* The poster is a real img so it also shows when the video is hidden (reduced motion) or still loading. */}
+  <section id="profile" class="relative aspect-[8/3] min-h-[340px] w-full overflow-hidden bg-neutral-900">
+    <img src={REEL_POSTER} alt="" width="1920" height="720" fetchpriority="high" class="absolute inset-0 h-full w-full object-cover" />
+    {REEL && <video src={REEL} poster={REEL_POSTER} autoplay muted loop playsinline preload="metadata" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover"></video>}
+    {/* Dark layer keeps the footage from competing with the text. Heavier at the bottom where the text sits. */}
+    <div class="absolute inset-0 bg-black/55 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+    <div class="absolute inset-x-5 bottom-5 grid gap-4 border-t border-white/30 pt-3 text-white md:grid-cols-2">
+      <h2 class="text-white/70">Profile</h2>
+      <p class="normal-case">{PROFILE}</p>
+    </div>
   </section>
 
   <section id="work" class="mt-12 grid gap-x-3 gap-y-8 px-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -25,7 +28,7 @@ const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.
         const thumb = data.thumbnail ?? (data.videoUrl ? parseVideo(data.videoUrl).thumbnail : undefined);
         return (
           <a href={`/work/${id}`} class="group block">
-            <div class="aspect-video overflow-hidden rounded-sm bg-neutral-900">
+            <div class="aspect-video overflow-hidden rounded-sm bg-surface">
               {typeof thumb === "string" && (
                 <img src={thumb} alt="" loading="lazy" class="h-full w-full object-cover transition-opacity group-hover:opacity-80" />
               )}

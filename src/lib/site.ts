@@ -11,8 +11,10 @@ export const DESCRIPTION = "Portfolio of Darwin Iquiña, a video editor. Selecte
 export const PROFILE =
   "Darwin Iquiña is a video editor. Replace this placeholder with a short, confirmed profile.";
 
-// Optional looping hero video (muted, short, compressed). Example: "/reel.mp4"
-export const REEL: string | null = null;
+// Looping hero banner (muted, 1920x720, about 1.75 MB) and the poster shown before it plays.
+// Rebuilt from the sample outputs by banner.ps1, which lives outside this repo.
+export const REEL: string | null = "/banner.mp4";
+export const REEL_POSTER = "/banner-poster.webp";
 
 // Flip to true at launch. While false, every page is noindex so placeholder content stays out of search.
 export const INDEXABLE = false;
