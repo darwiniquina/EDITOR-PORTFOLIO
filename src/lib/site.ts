@@ -8,8 +8,14 @@ export const EMAIL = "darwiniquina@gmail.com";
 export const TITLE = `${NAME} | Video Editor`;
 // TODO: replace with confirmed copy before launch. Keep it factual, no invented clients or results.
 export const DESCRIPTION = "Portfolio of Darwin Iquiña, a video editor. Selected edits and credits.";
-export const PROFILE =
-  "Darwin Iquiña is a video editor. Replace this placeholder with a short, confirmed profile.";
+// Shown in the hero banner as the opening hook. Keep it a craft statement, not a results claim.
+// Two lines, each split so its key phrase can be drawn as a highlighted selection.
+export const HOOK_1 = { before: "Your content deserves", mark: "attention", after: "." };
+export const HOOK_2 = { before: "I make", mark: "every second", after: "count." };
+
+// Wording stays open ("video", not "edit") because the work includes UGC-style content too.
+export const CTA_TEXT = "Let's work together";
+export const CTA_HREF = `mailto:${EMAIL}?subject=Video%20project`;
 
 // Looping hero banner (muted, 1920x720, about 1.75 MB) and the poster shown before it plays.
 // Rebuilt from the sample outputs by banner.ps1, which lives outside this repo.

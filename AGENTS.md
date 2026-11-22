@@ -1,6 +1,6 @@
 # Edits Portfolio
 
-Video editing portfolio for Darwin Iquiña at `edits.darwiniquina.com`. Separate repo from the main automation portfolio (`C:\Personal\portfolio`). Inspiration: kenedits.com (dark, mono type, full-bleed reel, numbered thumbnail grid). Direction is clean and direct; keep complexity low.
+Video editing portfolio for Darwin Iquiña at `edits.darwiniquina.com`. Separate repo from the main automation portfolio (`C:\Personal\portfolio`). Inspiration: kenedits.com (full-bleed reel, numbered thumbnail grid). Direction is clean and direct; keep complexity low. Type is Inter in sentence case, to feel approachable, not like a Hollywood studio. JetBrains Mono is only for small labels such as project numbers. The call to action ("Say hi" in the header, and a button in the banner) uses "video", not "edit", because the work includes UGC too.
 
 ## Rules
 
