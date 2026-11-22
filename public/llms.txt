@@ -1,0 +1,15 @@
+# Darwin Iquiña | Video Editor
+
+> Video editing portfolio of Darwin Iquiña (also known as Darwin Iquina and darcoded). TODO: replace with a confirmed one-line summary before launch.
+
+## About
+
+Placeholder. Add only confirmed facts: what Darwin edits, tools used, and which projects are client work versus personal. Do not assume client engagements or results unless a page states them.
+
+## Pages
+
+- [Work and profile](https://edits.darwiniquina.com/): selected edits and a short profile.
+
+## Related
+
+- [Darwin Iquiña, main site](https://www.darwiniquina.com/): software engineering and workflow automation. This is the primary profile; the edits site covers video editing only.

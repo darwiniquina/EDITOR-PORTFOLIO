@@ -1,0 +1,62 @@
+---
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Base from "../../layouts/Base.astro";
+import { parseVideo } from "../../lib/video";
+import { NAME, PERSON_ID, SITE_URL } from "../../lib/site";
+
+export const getStaticPaths = (async () => {
+  const work = await getCollection("work");
+  return work.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const video = data.videoUrl ? parseVideo(data.videoUrl) : undefined;
+const thumbnail = video?.thumbnail;
+
+const pageUrl = new URL(Astro.url.pathname, SITE_URL).href;
+const schema = [
+  {
+    "@type": "WebPage",
+    "@id": pageUrl,
+    url: pageUrl,
+    name: `${data.client} ${data.title}`,
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    mainEntity: { "@id": `${pageUrl}#video` },
+  },
+  // Google requires thumbnail and upload date for VideoObject, so only emit it when both are real.
+  ...(video && thumbnail && data.published
+    ? [
+        {
+          "@type": "VideoObject",
+          "@id": `${pageUrl}#video`,
+          name: `${data.client} ${data.title}`,
+          description: data.description,
+          thumbnailUrl: thumbnail,
+          uploadDate: data.published,
+          embedUrl: video.embed,
+          creator: { "@id": PERSON_ID },
+        },
+      ]
+    : []),
+];
+---
+
+<Base title={`${data.client} ${data.title} | ${NAME}`} description={data.description} schema={schema}>
+  <article class="px-5">
+    <div class="aspect-video w-full overflow-hidden rounded-sm bg-neutral-900">
+      {video && <iframe src={video.embed} title={`${data.client} ${data.title}`} loading="lazy" allowfullscreen class="h-full w-full"></iframe>}
+    </div>
+    <div class="mt-6 grid gap-4 border-t border-line pt-3 md:grid-cols-2">
+      <h1><span class="text-accent">{data.client}</span> {data.title}</h1>
+      <div class="normal-case">
+        <p class="text-muted">{data.role} · {data.year}</p>
+        <p class="mt-3">{data.description}</p>
+        <div class="mt-3"><Content /></div>
+      </div>
+    </div>
+    <a href="/#work" class="mt-10 inline-block text-muted hover:text-fg">← All work</a>
+  </article>
+</Base>

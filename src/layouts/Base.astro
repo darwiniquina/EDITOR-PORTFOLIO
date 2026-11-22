@@ -1,0 +1,82 @@
+---
+import "../styles/global.css";
+import { DESCRIPTION, EMAIL, INDEXABLE, MAIN_SITE_URL, NAME, PERSON_ID, SAME_AS, SITE_URL, TITLE } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  // Extra JSON-LD nodes for this page, added next to the shared Person and WebSite nodes.
+  schema?: object[];
+  noindex?: boolean;
+}
+
+const { title = TITLE, description = DESCRIPTION, schema = [], noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const robots = INDEXABLE && !noindex ? "index, follow" : "noindex, nofollow";
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: `${NAME} | Video Editor`,
+      inLanguage: "en",
+      publisher: { "@id": PERSON_ID },
+    },
+    {
+      "@type": "Person",
+      "@id": PERSON_ID,
+      name: NAME,
+      alternateName: ["Darwin Iquina", "darcoded"],
+      url: `${MAIN_SITE_URL}/`,
+      email: EMAIL,
+      sameAs: [...SAME_AS, `${SITE_URL}/`],
+    },
+    ...schema,
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/darcoded.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/darcoded-32.png" />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="describedby" href="/llms.txt" type="text/plain" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" set:html={JSON.stringify(graph).replaceAll("<", "\\u003c")} />
+  </head>
+  <body class="min-h-screen">
+    <header class="flex items-center justify-between px-5 py-4">
+      <a href="/" class="flex items-center gap-2 text-fg">
+        <img src="/darcoded-monogram-white.svg" alt="" width="18" height="18" />
+        {NAME}
+      </a>
+      <nav class="flex gap-6 text-muted">
+        <a href="/#work" class="hover:text-fg">Work</a>
+        <a href="/#profile" class="hover:text-fg">Profile</a>
+        <a href={`mailto:${EMAIL}`} class="hover:text-fg">Contact</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="mt-24 flex flex-wrap justify-between gap-4 border-t border-line px-5 py-6 text-muted">
+      <a href={`mailto:${EMAIL}`} class="hover:text-fg">{EMAIL}</a>
+      <a href={`${MAIN_SITE_URL}/`} class="hover:text-fg">Darwin Iquiña, automation work</a>
+    </footer>
+  </body>
+</html>
