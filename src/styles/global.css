@@ -63,6 +63,45 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Ruler scrollbar (home page, md and up): the native bar is hidden and #ruler replaces it. */
+@media (min-width: 768px) {
+  html:has(#ruler) {
+    scrollbar-width: none;
+  }
+  html:has(#ruler)::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Ticks follow the theme text colour: white on dark, dark violet on light. */
+#ruler {
+  --ruler: var(--color-fg);
+}
+
+:root[data-theme="light"] #ruler {
+  --ruler: #8b7cf0;
+}
+
+.ruler-ticks {
+  background:
+    repeating-linear-gradient(to bottom, var(--ruler) 0 2px, transparent 2px 12px) right / 10px 100% no-repeat,
+    repeating-linear-gradient(to bottom, var(--ruler) 0 2px, transparent 2px 60px) right / 20px 100% no-repeat;
+  opacity: 0.7;
+  transition: background-size 0.2s ease-out;
+}
+
+/* Hovering the ruler lengthens the ticks. */
+#ruler:hover .ruler-ticks {
+  background-size: 16px 100%, 34px 100%;
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   video {
     display: none;

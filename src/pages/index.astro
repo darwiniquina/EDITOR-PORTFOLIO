@@ -90,6 +90,52 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     }
   </section>
 
+  {/* Ruler scrollbar. Ticks are decorative; the labels are real links, and click or drag on the ruler seeks. Desktop only. */}
+  <nav id="ruler" aria-label="Page sections" class="group fixed bottom-0 right-0 top-16 z-40 hidden w-36 touch-none md:block">
+    <div aria-hidden="true" class="ruler-ticks absolute inset-0"></div>
+    <span id="ruler-thumb" aria-hidden="true" class="absolute right-0 top-0 h-0.5 w-9 bg-[#7c6fe0]">
+      <span class="absolute -left-1.5 -top-[5px] h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
+    </span>
+    {
+      [["#", "Top"], ["#filters", "Work"], ["#contact", "Contact"]].map(([href, label]) => (
+        <a href={href} class="absolute right-8 -translate-y-1/2 font-mono text-base font-medium uppercase tracking-wider text-(--ruler)/70 transition-all group-hover:right-12 group-hover:text-xl hover:underline">
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <script>
+    const ruler = document.getElementById("ruler")!;
+    const thumb = document.getElementById("ruler-thumb")!;
+    const labels = ruler.querySelectorAll<HTMLAnchorElement>("a");
+    const PAD = 12;
+    const max = () => document.documentElement.scrollHeight - innerHeight;
+    const toY = (p: number) => PAD + p * (ruler.clientHeight - 2 * PAD);
+    const moveThumb = () => (thumb.style.top = `${toY(Math.min(scrollY / max(), 1))}px`);
+    // Labels sit where their section starts, as a share of the scrollable height.
+    const place = () => {
+      labels.forEach((a) => {
+        const el = a.hash.length > 1 ? document.querySelector(a.hash) : null;
+        const start = el ? el.getBoundingClientRect().top + scrollY : 0;
+        a.style.top = `${toY(Math.min(start / max(), 1))}px`;
+      });
+      moveThumb();
+    };
+    const seek = (e: PointerEvent) =>
+      scrollTo({ top: ((e.clientY - ruler.getBoundingClientRect().top - PAD) / (ruler.clientHeight - 2 * PAD)) * max(), behavior: "instant" });
+    ruler.addEventListener("pointerdown", (e) => {
+      if ((e.target as Element).closest("a")) return;
+      ruler.setPointerCapture(e.pointerId);
+      seek(e);
+    });
+    ruler.addEventListener("pointermove", (e) => ruler.hasPointerCapture(e.pointerId) && seek(e));
+    addEventListener("scroll", moveThumb, { passive: true });
+    // Page height changes when images load or a filter hides cards.
+    new ResizeObserver(place).observe(document.body);
+    place();
+  </script>
+
   <script>
     // Chips show or hide cards by category. Hidden cards leave the screen, so their clips pause on their own.
     const bar = document.getElementById("filters")!;
