@@ -8,9 +8,11 @@ interface Props {
   // Extra JSON-LD nodes for this page, added next to the shared Person and WebSite nodes.
   schema?: object[];
   noindex?: boolean;
+  // The page starts with a full-bleed hero under the header: the header is see-through at the very top.
+  overlay?: boolean;
 }
 
-const { title = TITLE, description = DESCRIPTION, schema = [], noindex = false } = Astro.props;
+const { title = TITLE, description = DESCRIPTION, schema = [], noindex = false, overlay = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const robots = INDEXABLE && !noindex ? "index, follow" : "noindex, nofollow";
 
@@ -82,23 +84,23 @@ const graph = {
     <script type="application/ld+json" set:html={JSON.stringify(graph).replaceAll("<", "\\u003c")} />
   </head>
   <body class="min-h-screen">
-    <header id="site-header" class="sticky top-0 z-50 flex items-center justify-between bg-bg px-5 py-4 transition-transform duration-300 data-[hidden]:-translate-y-full motion-reduce:transition-none">
-      <a href="/" class="flex items-center gap-2 font-medium text-fg">
-        <img src="/darcoded-monogram-white.svg" alt="" width="20" height="20" class="show-dark" />
-        <img src="/darcoded-monogram-color.svg" alt="" width="20" height="20" class="show-light" />
+    <header id="site-header" data-overlay={overlay || undefined} data-top={overlay || undefined} class="sticky top-0 z-50 flex items-center justify-between h-16 bg-bg px-5 font-mono text-sm font-bold uppercase tracking-tight md:text-xl transition-[transform,background-color] duration-300 data-[hidden]:-translate-y-full motion-reduce:transition-none">
+      <a href="/" class="flex items-center gap-2 text-fg md:gap-3">
+        <img src="/darcoded-monogram-white.svg" alt="" width="28" height="28" class="show-dark h-6 w-6 md:h-8 md:w-8" />
+        <img src="/darcoded-monogram-color.svg" alt="" width="28" height="28" class="show-light h-6 w-6 md:h-8 md:w-8" />
         {NAME}
       </a>
-      <nav class="flex items-center gap-5 text-muted">
+      <nav class="flex items-center gap-4 text-muted md:gap-8">
         <a href="/#filters" class="hover:text-fg">Work</a>
         <a href={MAIN_SITE_URL} class="hover:text-fg">About</a>
         {/* Same Sun and Moon icons (lucide, stroke 1.8) as the main portfolio, inlined so no icon library ships. */}
         <button id="theme-toggle" type="button" aria-label="Switch theme" class="hover:text-fg focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-accent">
-          <svg class="show-dark h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="show-dark h-5 w-5 md:h-7 md:w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="4" />
             <path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
             <path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
           </svg>
-          <svg class="show-light h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="show-light h-5 w-5 md:h-7 md:w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
           </svg>
         </button>
@@ -160,6 +162,7 @@ const graph = {
         () => {
           const goingDown = scrollY > lastY && scrollY > header.offsetHeight;
           header.toggleAttribute("data-hidden", goingDown);
+          if (header.hasAttribute("data-overlay")) header.toggleAttribute("data-top", scrollY < 8); // solid again once the page moves
           lastY = scrollY;
         },
         { passive: true },
