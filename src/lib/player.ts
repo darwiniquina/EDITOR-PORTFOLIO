@@ -10,7 +10,8 @@ const ICON = {
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 const btn = "grid h-8 w-8 place-items-center rounded-full text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent";
 
-export function addControls(video: HTMLVideoElement, host: HTMLElement) {
+// `caption` (optional) sits at the top of the bar, so it rises and falls with the controls.
+export function addControls(video: HTMLVideoElement, host: HTMLElement, caption?: HTMLElement) {
   video.controls = false;
   video.dataset.player = ""; // marks a full player, so the reduced-motion rule leaves it visible
   host.classList.add("relative");
@@ -25,15 +26,18 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
     <span data-err class="hidden rounded-full bg-black/60 px-4 py-2 text-sm text-white">Couldn't load. Tap to retry</span>`;
 
   const bar = document.createElement("div");
-  bar.className = "absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-12 text-white transition-opacity duration-200 motion-reduce:transition-none";
+  // Only the progress line shows at rest. Hover, keyboard focus, or a paused video slides the bar up and reveals the options under it.
+  // At rest the bar's box covers the bottom ~36px, so hovering anywhere there reveals the options and the hover can't drop as the bar moves.
+  bar.className = "group/bar absolute inset-x-0 bottom-0 flex translate-y-11 flex-col gap-1 px-4 pb-3 pt-4 text-white transition-transform duration-200 hover:translate-y-0 focus-within:translate-y-0 data-[open]:translate-y-0 motion-reduce:transition-none";
   bar.innerHTML = `
+    <div class="pointer-events-none absolute inset-x-0 -top-16 bottom-0 -z-10 bg-gradient-to-t from-black/80 to-transparent opacity-60 transition-opacity duration-200 group-hover/bar:opacity-100 group-focus-within/bar:opacity-100 group-data-[open]/bar:opacity-100 motion-reduce:transition-none"></div>
     <div data-seek role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" class="group/seek relative h-4 cursor-pointer touch-none">
       <div class="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-white/25 transition-[height] group-hover/seek:h-1.5">
         <div data-buf class="absolute inset-y-0 left-0 w-0 rounded-full bg-white/30"></div>
         <div data-fill class="absolute inset-y-0 left-0 w-0 rounded-full bg-accent"></div>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover/bar:opacity-100 group-focus-within/bar:opacity-100 group-data-[open]/bar:opacity-100 motion-reduce:transition-none">
       <button type="button" data-play class="${btn}"></button>
       <span data-time class="font-mono text-xs tabular-nums text-white/80">0:00 / 0:00</span>
       <div class="ml-auto flex items-center gap-1">
@@ -41,6 +45,7 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
         <button type="button" data-mute class="${btn}"></button>
       </div>
     </div>`;
+  if (caption) bar.children[0].after(caption); // after the gradient layer, before the progress line
   host.append(big, bar);
 
   const $ = <T extends HTMLElement>(s: string) => bar.querySelector<T>(s)!;
@@ -59,13 +64,6 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
       video.load(); // retry after a failed load
       video.play().catch(() => {});
     } else video.paused ? video.play().catch(() => {}) : video.pause();
-  };
-  let hide: number;
-  // The bar stays up while paused; while playing it fades 2 s after the last movement.
-  const show = () => {
-    bar.style.opacity = "1";
-    clearTimeout(hide);
-    if (!video.paused) hide = window.setTimeout(() => (bar.style.opacity = "0"), 2000);
   };
   // Swap an icon only when it changes; timeupdate fires several times a second.
   const swap = (el: HTMLElement, key: string, html: string) => {
@@ -92,6 +90,7 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
     err.classList.toggle("hidden", !failed);
     mark.classList.toggle("hidden", failed || loading || !video.paused);
     mark.classList.toggle("grid", !failed && !loading && video.paused);
+    bar.toggleAttribute("data-open", !failed && !loading && video.paused); // paused shows the options, which also covers touch screens
   }
 
   const scrub = (e: PointerEvent) => {
@@ -109,6 +108,7 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
   });
 
   video.addEventListener("click", toggle);
+  bar.addEventListener("click", (e) => e.target === bar && toggle()); // the bar covers part of the video, so its empty area still taps through
   play.addEventListener("click", toggle);
   mute.addEventListener("click", () => {
     video.muted = !video.muted;
@@ -118,13 +118,9 @@ export function addControls(video: HTMLVideoElement, host: HTMLElement) {
     video.volume = +vol.value;
     video.muted = video.volume === 0;
   });
-  host.addEventListener("pointermove", show);
   for (const ev of ["timeupdate", "loadedmetadata", "durationchange", "volumechange", "play", "pause", "waiting", "stalled", "playing", "canplay", "seeked", "progress", "error", "emptied"]) video.addEventListener(ev, render);
-  video.addEventListener("play", show);
-  video.addEventListener("pause", show);
   // A hidden tab shouldn't keep decoding. The player is removed when the modal closes, so drop the listener then.
   const onVis = () => (video.isConnected ? document.hidden && video.pause() : document.removeEventListener("visibilitychange", onVis));
   document.addEventListener("visibilitychange", onVis);
   render();
-  show();
 }
