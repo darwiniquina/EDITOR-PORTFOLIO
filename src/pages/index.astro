@@ -98,7 +98,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
   <dialog id="player" aria-label="Video player" class="group/dlg m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden rounded-none border-0 bg-surface p-0 text-fg shadow-2xl backdrop:bg-black/80 backdrop:backdrop-blur-xl md:m-auto md:open:flex md:h-[92vh] md:w-[calc(92vh*9/16)] md:rounded-lg md:data-[details]:w-[min(94vw,calc(92vh*9/16+34rem))]">
     <div id="player-slot" class="relative h-full w-full shrink-0 bg-black md:aspect-[9/16] md:w-auto"></div>
     <button type="button" id="player-cap" hidden aria-expanded="false" aria-controls="player-details" class="flex flex-col gap-1 pb-1 text-left text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
-      <span id="cap-title" class="line-clamp-1 font-bold"></span>
+      <span id="cap-title" class="line-clamp-2 font-bold"></span>
       <span id="cap-desc" class="line-clamp-2 text-sm text-white/85"></span>
     </button>
     <div id="player-details" class="fixed inset-x-0 bottom-0 z-10 hidden max-h-[65dvh] overflow-y-auto rounded-t-2xl bg-surface p-6 shadow-2xl group-data-[details]/dlg:block md:static md:max-h-none md:flex-1 md:rounded-none md:p-8 md:pr-16 md:shadow-none">
