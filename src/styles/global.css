@@ -108,8 +108,8 @@ html:has(dialog[open]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Hides the looping clips; full players have controls, so people can still watch them. */
-  video:not([controls]) {
+  /* Hides the looping clips; full players (data-player) have controls, so people can still watch them. */
+  video:not([data-player]) {
     display: none;
   }
 }

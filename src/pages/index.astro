@@ -92,16 +92,20 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
   </section>
 
   {/* Video modal. The native dialog gives focus trapping and Esc for free; the backdrop is the blur. */}
-  {/* Full-height panel: video on the left, details on the right. On phones the video sits on top and the panel scrolls. */}
-  <dialog id="player" aria-label="Video player" class="m-auto h-[92vh] max-h-none w-[94vw] max-w-none overflow-y-auto rounded-lg border-0 bg-surface p-0 text-fg shadow-2xl backdrop:bg-black/80 backdrop:backdrop-blur-xl md:flex md:w-[min(94vw,calc(92vh*9/16+34rem))] md:overflow-hidden">
-    <div id="player-slot" class="aspect-[9/16] w-full shrink-0 bg-black md:h-full md:w-auto"></div>
-    <div class="p-6 md:flex-1 md:overflow-y-auto md:p-8 md:pr-16">
+  {/* Like Shorts: the video alone, with the title and a clipped description over its bottom-left. Tapping the caption sets data-details, which widens the dialog and shows the details panel. */}
+  <dialog id="player" aria-label="Video player" class="group/dlg m-auto h-[92vh] max-h-none w-[94vw] max-w-none overflow-y-auto rounded-lg border-0 bg-surface p-0 text-fg shadow-2xl backdrop:bg-black/80 backdrop:backdrop-blur-xl md:flex md:w-[calc(92vh*9/16)] md:overflow-hidden md:data-[details]:w-[min(94vw,calc(92vh*9/16+34rem))]">
+    <div id="player-slot" class="relative aspect-[9/16] w-full shrink-0 bg-black md:h-full md:w-auto"></div>
+    <button type="button" id="player-cap" hidden aria-expanded="false" aria-controls="player-details" class="absolute inset-x-0 bottom-16 flex flex-col gap-1 px-4 pb-1 pt-8 text-left text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+      <span id="cap-title" class="line-clamp-1 font-bold"></span>
+      <span id="cap-desc" class="line-clamp-2 text-sm text-white/85"></span>
+    </button>
+    <div id="player-details" class="hidden p-6 group-data-[details]/dlg:block md:flex-1 md:overflow-y-auto md:p-8 md:pr-16">
       <p id="player-client" class="text-sm text-accent"></p>
       <h2 id="player-title" class="text-2xl font-bold md:text-3xl"></h2>
       <p id="player-meta" class="mt-2 text-muted"></p>
       <p id="player-desc" class="mt-4 max-w-prose"></p>
     </div>
-    <button type="button" id="player-close" aria-label="Close video" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 md:bg-transparent md:text-fg md:hover:bg-fg/10">
+    <button type="button" id="player-close" aria-label="Close video" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/15 text-white/50 transition hover:bg-black/50 hover:text-whitemd:group-data-[details]/dlg:bg-transparent md:group-data-[details]/dlg:text-fg md:group-data-[details]/dlg:hover:bg-fg/10">
       <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
     </button>
   </dialog>
@@ -186,8 +190,11 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
 
   <script>
     // The player is built on click and emptied on close, so nothing loads or keeps playing in the background.
+    import { addControls } from "../lib/player";
     const dlg = document.getElementById("player") as HTMLDialogElement;
     const slot = document.getElementById("player-slot")!;
+    const cap = document.getElementById("player-cap") as HTMLButtonElement;
+    cap.addEventListener("click", () => cap.setAttribute("aria-expanded", String(dlg.toggleAttribute("data-details"))));
 
     // Warm-up: while a card is hovered or touched, load its player in a hidden iframe so the real one starts faster.
     // One at a time, and never on data-saver or 2g. shortcut: this only warms the player page and its code; the video data itself can't be preloaded from another site.
@@ -229,7 +236,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
         let player: HTMLElement;
         if (file) {
           // Self-hosted: the browser can buffer it, and the poster shows until the first frame.
-          player = Object.assign(document.createElement("video"), { src: `/videos/${file}`, poster: `/previews/${slug}.webp`, controls: true, autoplay: true, playsInline: true, preload: "auto" });
+          player = Object.assign(document.createElement("video"), { src: `/videos/${file}`, poster: `/previews/${slug}.webp`, autoplay: true, playsInline: true, preload: "auto" });
         } else if (embed) {
           // A click counts as user interaction, so the video can start with sound.
           player = Object.assign(document.createElement("iframe"), { src: `${embed}?autoplay=1&playsinline=1`, title, allowFullscreen: true });
@@ -246,6 +253,16 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
         // The card's still shows behind the player until the video paints over it.
         slot.style.background = `center / cover url(/previews/${slug}.webp) black`;
         slot.replaceChildren(player);
+        if (file) addControls(player as HTMLVideoElement, slot);
+        // An embedded player draws its own controls over the bottom, so its details open at once instead of a caption.
+        const embedOnly = !!embed && !file;
+        dlg.toggleAttribute("data-details", embedOnly);
+        cap.setAttribute("aria-expanded", String(embedOnly));
+        cap.hidden = embedOnly;
+        // The caption is out of the document while closed, so look inside it rather than by id.
+        cap.querySelector("#cap-title")!.textContent = title ?? "";
+        cap.querySelector("#cap-desc")!.textContent = card.dataset.desc ?? "";
+        if (!embedOnly) slot.append(cap);
         // Details only show what is confirmed in the project file; empty ones are hidden.
         for (const key of ["title", "client", "meta", "desc"]) {
           const el = document.getElementById(`player-${key}`)!;

@@ -50,7 +50,7 @@ const schema = [
   <article class="grid gap-8 px-5 md:grid-cols-[auto_1fr] md:items-start md:gap-12">
     <div class="mx-auto aspect-[9/16] w-full max-w-[calc(80vh*9/16)] overflow-hidden rounded-sm bg-surface md:mx-0 md:w-[calc(80vh*9/16)]">
       {data.videoFile ? (
-        <video src={`/videos/${data.videoFile}`} poster={`/previews/${entry.id}.webp`} controls autoplay muted playsinline preload="metadata" class="h-full w-full"></video>
+        <video src={`/videos/${data.videoFile}`} poster={`/previews/${entry.id}.webp`} data-player autoplay muted playsinline preload="metadata" class="h-full w-full"></video>
       ) : video ? (
         // Browsers only autoplay muted video. `mute` is YouTube's flag, `muted` is Vimeo's.
         <iframe src={`${video.embed}?autoplay=1&mute=1&muted=1&playsinline=1`} title={name} allow="autoplay; fullscreen" allowfullscreen class="h-full w-full"></iframe>
@@ -69,3 +69,9 @@ const schema = [
     </div>
   </article>
 </Base>
+
+<script>
+  import { addControls } from "../../lib/player";
+  const v = document.querySelector<HTMLVideoElement>("video[data-player]");
+  if (v) addControls(v, v.parentElement!);
+</script>
