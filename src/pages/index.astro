@@ -300,8 +300,15 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
 
     const setActive = (i: number, first = false) => {
       if (i === active) return;
+      if (i === items.length) {
+        // The extra last section is a copy of the first reel: landing on it loops back to the real one.
+        const home = () => feed?.scrollTo({ top: 0, behavior: "instant" }); // also cancels a smooth scroll still in flight
+        home();
+        setTimeout(() => active === 0 && feed && feed.scrollTop && home(), 300); // a smooth scroll can finish its last frame after the jump
+        return setActive(0);
+      }
       active = i;
-      sections.forEach((_, j) => {
+      items.forEach((_, j) => {
         // Iframes and preview clips autoplay on creation, so they are only built when on screen.
         if (j === i || (items[j].dataset.file && Math.abs(j - i) === 1)) {
           mount(j);
@@ -338,7 +345,8 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
 
         items = [...document.querySelectorAll<HTMLAnchorElement>("#work a")].filter((c) => !c.hidden); // follows the active filter
         const start = items.indexOf(card);
-        sections = items.map((c) => {
+        // shortcut: a single reel has nothing to loop to; with 2+ the first reel's still is repeated at the end.
+        sections = (items.length > 1 ? [...items, items[0]] : items).map((c) => {
           const s = document.createElement("section");
           s.className = "relative h-full w-full snap-start snap-always overflow-hidden"; // clips the player bar's resting offset
           // The card's still shows until a video paints over it.
