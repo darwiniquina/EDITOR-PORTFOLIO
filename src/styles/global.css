@@ -44,6 +44,13 @@
   color-scheme: dark;
 }
 
+/* Header over a full-bleed hero: see-through, with light text in both themes (the hero is always dark). */
+#site-header[data-overlay][data-top] {
+  background-color: transparent;
+  --color-fg: #f2f2f2;
+  --color-muted: rgb(255 255 255 / 0.75);
+}
+
 /* Show an element in one theme only (logo variants, toggle label). */
 :root[data-theme="light"] .show-dark,
 :root:not([data-theme="light"]) .show-light {

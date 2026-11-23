@@ -9,26 +9,28 @@ const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.
 const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.data.category === key));
 ---
 
-<Base>
+<Base overlay>
   {/* The poster is a real img so it also shows when the video is hidden (reduced motion) or still loading. */}
-  <section class="relative aspect-[8/3] min-h-[420px] w-full overflow-hidden bg-neutral-900">
+  {/* -mt-16 pulls the hero up under the 64px (h-16) header, which is see-through at the top; the heights include that 64px. */}
+  <section class="relative -mt-16 h-[484px] w-full overflow-hidden bg-neutral-900 md:h-svh md:max-h-[56rem] md:min-h-[544px]">
     <img src={REEL_POSTER} alt="" width="1920" height="720" fetchpriority="high" class="absolute inset-0 h-full w-full object-cover" />
     {REEL && <video src={REEL} poster={REEL_POSTER} autoplay muted loop playsinline preload="metadata" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover"></video>}
     {/* Dark layer keeps the footage from competing with the text. Heavier at the bottom where the text sits. */}
     <div class="absolute inset-0 bg-black/78 backdrop-blur-[2px] bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
     <div class="absolute inset-0 flex flex-col items-center justify-center px-5 text-center text-white">
-      <h1 class="max-w-3xl text-balance text-[1.75rem] font-bold leading-tight md:text-[3.4rem]">
+      <h1 class="max-w-[22ch] text-balance text-[clamp(2rem,6vw,6rem)] font-bold leading-[0.95] tracking-tighter">
         <span class="block">
-          {HOOK_1.before}{" "}<span class="bg-[#7c6fe0] px-2 [box-decoration-break:clone]">{HOOK_1.mark}</span>{HOOK_1.after}
+          {HOOK_1.before}{" "}<span class="bg-[#7c6fe0] px-[0.15em] [box-decoration-break:clone]">{HOOK_1.mark}</span>{HOOK_1.after}
         </span>
-        <span class="mt-3 block md:mt-4">
+        <span class="mt-[0.2em] block">
           {HOOK_2.before}{" "}
           {/* Selection-box look: corner handles and a cursor. Decorative parts are aria-hidden. */}
-          <span class="relative mx-1 inline-block bg-[#7c6fe0] px-2 md:px-3">
+          <span class="relative mx-1 inline-block bg-[#7c6fe0] px-[0.15em]">
             {HOOK_2.mark}
-            <span aria-hidden="true" class="absolute -left-2 -top-2 h-3.5 w-3.5 rounded-full border-2 border-white bg-[#3b5bdb] md:h-4 md:w-4"></span>
-            <span aria-hidden="true" class="absolute -bottom-2 -right-2 h-3.5 w-3.5 rounded-full border-2 border-white bg-[#3b5bdb] md:h-4 md:w-4"></span>
-            <svg aria-hidden="true" viewBox="0 0 24 24" class="absolute -bottom-7 -right-6 h-7 w-7 drop-shadow md:-bottom-9 md:-right-8 md:h-9 md:w-9">
+            {/* Sizes in em so the handles and cursor grow with the headline. */}
+            <span aria-hidden="true" class="absolute -left-[0.12em] -top-[0.12em] h-[0.2em] w-[0.2em] rounded-full border-2 border-white bg-[#3b5bdb]"></span>
+            <span aria-hidden="true" class="absolute -bottom-[0.12em] -right-[0.12em] h-[0.2em] w-[0.2em] rounded-full border-2 border-white bg-[#3b5bdb]"></span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" class="absolute -bottom-[0.5em] -right-[0.4em] h-[0.5em] w-[0.5em] drop-shadow">
               <path d="M4 2l16 9-7 2-3 7z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round" />
             </svg>
           </span>{" "}
