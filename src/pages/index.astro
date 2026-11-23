@@ -48,7 +48,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
   {/* Vertical reels: 9:16 cards. Clips loop on their own; hovering a card darkens it with a play button. Clicking opens the video in a modal; the link still works as a normal page link (new tab, no JS). */}
   {/* Big type selector. A purple block (same colour as the hero highlight) slides under the active option. */}
   <div class="mt-12 px-5 md:pr-14">
-    <div id="filters" role="group" aria-label="Filter by type" class="group relative flex flex-wrap items-center gap-x-1 gap-y-1 border-y-2 border-fg py-4">
+    <div id="filters" role="group" aria-label="Filter by type" class="group relative flex items-center gap-x-1 overflow-x-auto border-y-2 border-fg py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:gap-y-1 md:overflow-visible md:py-4">
       <span id="filter-pill" aria-hidden="true" class="absolute left-0 top-0 h-0 w-0 bg-[#7c6fe0] transition-[left,top,width,height] duration-300 ease-out motion-reduce:transition-none">
         <span class="absolute -left-1.5 -top-1.5 h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
         <span class="absolute -bottom-1.5 -right-1.5 h-3 w-3 rounded-full border-2 border-white bg-[#3b5bdb]"></span>
@@ -177,6 +177,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       btn.addEventListener("click", () => {
         chipButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
         movePill();
+        btn.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); // the row scrolls sideways on phones
         document.querySelectorAll<HTMLElement>("#work a").forEach((card) => {
           card.hidden = btn.dataset.filter !== "all" && card.dataset.category !== btn.dataset.filter;
         });
