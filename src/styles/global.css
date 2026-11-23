@@ -102,8 +102,14 @@ a:focus-visible {
   opacity: 1;
 }
 
+/* No page scroll behind the video modal. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  video {
+  /* Hides the looping clips; full players have controls, so people can still watch them. */
+  video:not([controls]) {
     display: none;
   }
 }

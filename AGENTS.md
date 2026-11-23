@@ -20,7 +20,7 @@ Video editing portfolio for Darwin Iquiña at `edits.darwiniquina.com`. Separate
 - The Person `@id` matches the main site, so both sites describe one entity. Keep `sameAs` in sync with the main site.
 - `INDEXABLE = false` makes every page `noindex`. Flip it only at launch, after removing placeholder content.
 - `VideoObject` is emitted only for YouTube projects with `published` set (needs a real thumbnail URL and upload date). Vimeo projects get the page schema only.
-- Videos are embedded from YouTube (watch, youtu.be or /shorts/) or Vimeo. Do not commit full videos. Only the hero loop (`REEL`) and the small hover previews (`public/previews/<slug>.mp4` and `.webp`, 450x800, about 250 KB, built by `previews.ps1` outside this repo) may live in `public/`.
+- Videos play from `public/videos/` (`videoFile`, see `VIDEOS.md`: compressed, never overwritten, renamed on change), or are embedded from Drive, YouTube (watch, youtu.be or /shorts/) or Vimeo (`videoUrl`). Do not commit uncompressed originals. Other files in `public/`: the hero loop (`REEL`) and the small hover previews (`public/previews/<slug>.mp4` and `.webp`, 450x800, about 250 KB, built by `previews.ps1` outside this repo).
 - Work is mostly vertical reels: cards and the project player are 9:16. A project's file name (slug) must match its preview files. Only `title` and `order` are required; add client, year, role, description and `videoUrl` only when confirmed.
 - Every project page needs real descriptive text, since crawlers cannot read video.
 

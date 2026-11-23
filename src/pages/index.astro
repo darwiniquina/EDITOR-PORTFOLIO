@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
+import { parseVideo } from "../lib/video";
 import { CATEGORIES, CTA_HREF, CTA_TEXT, HOOK_1, HOOK_2, REEL, REEL_POSTER } from "../lib/site";
 
 const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.order);
@@ -44,7 +45,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     </div>
   </section>
 
-  {/* Vertical reels: 9:16 cards. Clips loop on their own; hovering a card darkens it with a play button. Clicking still just opens the project page. */}
+  {/* Vertical reels: 9:16 cards. Clips loop on their own; hovering a card darkens it with a play button. Clicking opens the video in a modal; the link still works as a normal page link (new tab, no JS). */}
   {/* Big type selector. A purple block (same colour as the hero highlight) slides under the active option. */}
   <div class="mt-12 px-5 md:pr-14">
     <div id="filters" role="group" aria-label="Filter by type" class="group relative flex flex-wrap items-center gap-x-1 gap-y-1 border-y-2 border-fg py-4">
@@ -69,7 +70,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     <h2 class="sr-only">Selected work</h2>
     {
       work.map(({ id, data }, i) => (
-        <a href={`/work/${id}`} data-category={data.category} class="group block">
+        <a href={`/work/${id}`} data-category={data.category} data-slug={id} data-title={data.title} data-client={data.client} data-meta={[data.role, data.year].filter(Boolean).join(" · ") || undefined} data-desc={data.description} data-file={data.videoFile} data-embed={data.videoUrl ? parseVideo(data.videoUrl).embed : undefined} class="group block">
           <div class="relative aspect-[9/16] overflow-hidden rounded-sm bg-surface">
             <img src={`/previews/${id}.webp`} alt="" width="450" height="800" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
             <video data-src={`/previews/${id}.mp4`} muted loop playsinline preload="none" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover"></video>
@@ -89,6 +90,21 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       ))
     }
   </section>
+
+  {/* Video modal. The native dialog gives focus trapping and Esc for free; the backdrop is the blur. */}
+  {/* Full-height panel: video on the left, details on the right. On phones the video sits on top and the panel scrolls. */}
+  <dialog id="player" aria-label="Video player" class="m-auto h-[92vh] max-h-none w-[94vw] max-w-none overflow-y-auto rounded-lg border-0 bg-surface p-0 text-fg shadow-2xl backdrop:bg-black/80 backdrop:backdrop-blur-xl md:flex md:w-[min(94vw,calc(92vh*9/16+34rem))] md:overflow-hidden">
+    <div id="player-slot" class="aspect-[9/16] w-full shrink-0 bg-black md:h-full md:w-auto"></div>
+    <div class="p-6 md:flex-1 md:overflow-y-auto md:p-8 md:pr-16">
+      <p id="player-client" class="text-sm text-accent"></p>
+      <h2 id="player-title" class="text-2xl font-bold md:text-3xl"></h2>
+      <p id="player-meta" class="mt-2 text-muted"></p>
+      <p id="player-desc" class="mt-4 max-w-prose"></p>
+    </div>
+    <button type="button" id="player-close" aria-label="Close video" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 md:bg-transparent md:text-fg md:hover:bg-fg/10">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+    </button>
+  </dialog>
 
   {/* Ruler scrollbar. Ticks are decorative; the labels are real links, and click or drag on the ruler seeks. Desktop only. The strip is the only part that catches the mouse, and the labels appear when it is hovered. */}
   <nav id="ruler" aria-label="Page sections" class="group pointer-events-none fixed bottom-0 right-0 top-16 z-40 hidden w-40 touch-none md:block">
@@ -166,6 +182,98 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       bar.dataset.ready = "";
     });
     addEventListener("resize", movePill);
+  </script>
+
+  <script>
+    // The player is built on click and emptied on close, so nothing loads or keeps playing in the background.
+    const dlg = document.getElementById("player") as HTMLDialogElement;
+    const slot = document.getElementById("player-slot")!;
+
+    // Warm-up: while a card is hovered or touched, load its player in a hidden iframe so the real one starts faster.
+    // One at a time, and never on data-saver or 2g. shortcut: this only warms the player page and its code; the video data itself can't be preloaded from another site.
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    let warm: HTMLIFrameElement | undefined;
+    const slowLink = conn?.saveData || /2g/.test(conn?.effectiveType ?? "");
+    const warmUp = (card: HTMLElement) => {
+      const { embed } = card.dataset;
+      if (!embed || slowLink || dlg.open || warm?.src === embed) return;
+      warm?.remove();
+      warm = Object.assign(document.createElement("iframe"), { src: embed, hidden: true, tabIndex: -1 });
+      warm.setAttribute("aria-hidden", "true");
+      document.body.append(warm);
+    };
+
+    // Waterfall: the page, thumbnails and card clips come first. Once the page has loaded and the browser is idle,
+    // warm the first few players one by one in grid order. shortcut: only the first WARM_FIRST, to stay clear of Drive's throttling; raise it if hover warm-up proves the gain.
+    const WARM_FIRST = 6;
+    addEventListener("load", async () => {
+      if (slowLink) return;
+      for (const card of [...document.querySelectorAll<HTMLAnchorElement>("#work a[data-embed]")].slice(0, WARM_FIRST)) {
+        await new Promise((r) => ("requestIdleCallback" in window ? requestIdleCallback(r, { timeout: 3000 }) : setTimeout(r, 1500)));
+        if (dlg.open) return;
+        warmUp(card);
+        // Next one starts when this player has loaded (or after 4 s, so a stuck one can't block the rest).
+        await new Promise((r) => {
+          warm?.addEventListener("load", r, { once: true });
+          setTimeout(r, 4000);
+        });
+      }
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>("#work a").forEach((card) => {
+      card.addEventListener("pointerenter", () => warmUp(card));
+      card.addEventListener("click", (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; // let "open in new tab" work
+        e.preventDefault();
+        const { slug, title, embed, file } = card.dataset;
+        let player: HTMLElement;
+        if (file) {
+          // Self-hosted: the browser can buffer it, and the poster shows until the first frame.
+          player = Object.assign(document.createElement("video"), { src: `/videos/${file}`, poster: `/previews/${slug}.webp`, controls: true, autoplay: true, playsInline: true, preload: "auto" });
+        } else if (embed) {
+          // A click counts as user interaction, so the video can start with sound.
+          player = Object.assign(document.createElement("iframe"), { src: `${embed}?autoplay=1&playsinline=1`, title, allowFullscreen: true });
+          player.setAttribute("allow", "autoplay; fullscreen");
+          // Players paint black before the first frame, so keep the still showing and fade the player in.
+          // shortcut: a fixed delay after load, since a cross-origin player can't tell us when video starts. Raise it if black still flashes on slow connections.
+          player.classList.add("opacity-0", "transition-opacity", "duration-500");
+          player.addEventListener("load", () => setTimeout(() => player.classList.remove("opacity-0"), 900));
+        } else {
+          // shortcut: no full video linked yet, so the short preview loops here.
+          player = Object.assign(document.createElement("video"), { src: `/previews/${slug}.mp4`, autoplay: true, muted: true, loop: true, playsInline: true });
+        }
+        player.className = "h-full w-full";
+        // The card's still shows behind the player until the video paints over it.
+        slot.style.background = `center / cover url(/previews/${slug}.webp) black`;
+        slot.replaceChildren(player);
+        // Details only show what is confirmed in the project file; empty ones are hidden.
+        for (const key of ["title", "client", "meta", "desc"]) {
+          const el = document.getElementById(`player-${key}`)!;
+          el.textContent = card.dataset[key] ?? "";
+          el.hidden = !card.dataset[key];
+        }
+        // Freeze the hero reel and card clips behind the modal, and remember which ones to resume.
+        playing = [...document.querySelectorAll("video")].filter((v) => !v.paused && !dlg.contains(v));
+        playing.forEach((v) => v.pause());
+        warm?.remove(); // the real player takes over
+        warm = undefined;
+        dlg.showModal();
+      });
+    });
+    let playing: HTMLVideoElement[] = [];
+    // Removing the player stops its sound at once; the "close" event covers Esc.
+    const cleanup = () => {
+      slot.replaceChildren();
+      playing.forEach((v) => v.play().catch(() => {}));
+      playing = [];
+    };
+    const closeModal = () => {
+      dlg.close();
+      cleanup();
+    };
+    document.getElementById("player-close")!.addEventListener("click", closeModal);
+    dlg.addEventListener("click", (e) => e.target === dlg && closeModal()); // click on the blur
+    dlg.addEventListener("close", () => dlg.open || cleanup()); // a late event must not wipe a player opened since
   </script>
 
   <script>

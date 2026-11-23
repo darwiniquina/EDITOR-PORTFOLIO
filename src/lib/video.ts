@@ -17,5 +17,12 @@ export function parseVideo(url: string) {
     return { embed: `https://player.vimeo.com/video/${id}`, thumbnail: undefined };
   }
 
-  throw new Error(`Only YouTube and Vimeo are supported: ${url}`);
+  if (u.hostname === "drive.google.com") {
+    const id = u.pathname.split("/")[3]; // /file/d/<id>/preview
+    if (!id) throw new Error(`Unrecognised Google Drive URL: ${url}`);
+    // shortcut: Drive has no thumbnail URL or autoplay, and throttles busy files. Trial only.
+    return { embed: `https://drive.google.com/file/d/${id}/preview`, thumbnail: undefined };
+  }
+
+  throw new Error(`Only YouTube, Vimeo and Google Drive are supported: ${url}`);
 }

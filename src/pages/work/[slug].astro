@@ -49,8 +49,11 @@ const schema = [
   {/* Reels are vertical: the player is 9:16 and capped by screen height, with the details beside it on desktop. */}
   <article class="grid gap-8 px-5 md:grid-cols-[auto_1fr] md:items-start md:gap-12">
     <div class="mx-auto aspect-[9/16] w-full max-w-[calc(80vh*9/16)] overflow-hidden rounded-sm bg-surface md:mx-0 md:w-[calc(80vh*9/16)]">
-      {video ? (
-        <iframe src={video.embed} title={name} loading="lazy" allowfullscreen class="h-full w-full"></iframe>
+      {data.videoFile ? (
+        <video src={`/videos/${data.videoFile}`} poster={`/previews/${entry.id}.webp`} controls autoplay muted playsinline preload="metadata" class="h-full w-full"></video>
+      ) : video ? (
+        // Browsers only autoplay muted video. `mute` is YouTube's flag, `muted` is Vimeo's.
+        <iframe src={`${video.embed}?autoplay=1&mute=1&muted=1&playsinline=1`} title={name} allow="autoplay; fullscreen" allowfullscreen class="h-full w-full"></iframe>
       ) : (
         // shortcut: no full video linked yet, so the 2.5 s preview loops here. Add videoUrl to replace it.
         <video src={`/previews/${entry.id}.mp4`} poster={`/previews/${entry.id}.webp`} autoplay muted loop playsinline class="h-full w-full object-cover"></video>

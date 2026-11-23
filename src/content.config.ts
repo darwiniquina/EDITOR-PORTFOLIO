@@ -14,8 +14,10 @@ const work = defineCollection({
     year: z.number().optional(),
     role: z.string().optional(),
     description: z.string().optional(),
-    // YouTube (watch, youtu.be or /shorts/) or Vimeo URL. Full videos stay on the host, not in git.
+    // YouTube (watch, youtu.be or /shorts/), Vimeo or Google Drive (/preview) URL. Full videos stay on the host, not in git.
     videoUrl: z.url().optional(),
+    // File name in public/videos/ for a self-hosted video. Wins over videoUrl. See VIDEOS.md.
+    videoFile: z.string().regex(/^[\w.-]+\.mp4$/).optional(),
     // ISO date the video was published. Needed for VideoObject schema.
     published: z.string().optional(),
   }),
