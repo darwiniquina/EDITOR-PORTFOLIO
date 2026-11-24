@@ -9,7 +9,7 @@ const work = defineCollection({
   schema: z.object({
     title: z.string(),
     order: z.number(),
-    category: z.enum(["ugc", "talking-heads", "coaching", "real-estate"]).optional(),
+    category: z.enum(["ugc", "talking-heads", "real-estate"]).optional(),
     client: z.string().optional(),
     year: z.number().optional(),
     role: z.string().optional(),

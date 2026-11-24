@@ -41,7 +41,7 @@ videoFile: "<slug>-v1.mp4"
 ```
 
 - `order` sets the home grid position (lowest first). Ties are allowed; check where the new one lands.
-- `category` is one of `ugc`, `talking-heads`, `coaching`, `real-estate`.
+- `category` is one of `ugc`, `talking-heads`, `real-estate`.
 - Write the description from the real transcript (for example `assets/final-asr.json` in the video project). Crawlers cannot read video.
 - Add `client`, `year`, `role` only when confirmed. Label personal and spec work clearly.
 

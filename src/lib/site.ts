@@ -39,6 +39,5 @@ export const SAME_AS = [
 export const CATEGORIES = {
   ugc: "UGC",
   "talking-heads": "Talking heads",
-  coaching: "Coaching videos",
   "real-estate": "Real estate",
 } as const;
