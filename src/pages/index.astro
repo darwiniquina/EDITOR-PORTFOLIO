@@ -365,6 +365,16 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
         setActive(start, true);
         io = new IntersectionObserver((es) => es.forEach((en) => en.isIntersecting && setActive(sections.indexOf(en.target as HTMLElement))), { root: feed, threshold: 0.6 });
         sections.forEach((s) => io!.observe(s));
+        // Bouncing chevron: tells people the reel scrolls. Shown each time a video opens; gone after the first scroll.
+        if (sections.length > 1) {
+          const hint = document.createElement("div");
+          hint.className = "scroll-hint pointer-events-none absolute right-3 top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-1 rounded-full bg-black/55 px-2.5 py-3 text-white shadow-lg ring-1 ring-white/30 backdrop-blur-sm";
+          hint.innerHTML = `<span class="flex flex-col items-center"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg><svg class="-mt-4 h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg></span><span class="font-mono text-[11px] font-bold uppercase tracking-wider">Scroll</span>`;
+          slot.append(hint);
+          // Setting the start position fires a scroll event too, so only a real move away from it counts.
+          const from = feed.scrollTop;
+          feed.addEventListener("scroll", () => Math.abs(feed!.scrollTop - from) > 20 && hint.remove());
+        }
       });
     });
     // Up and down move one reel (wheel and touch scroll natively). Arrow keys stay with sliders and the details panel.

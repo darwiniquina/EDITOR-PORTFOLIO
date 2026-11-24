@@ -120,3 +120,26 @@ html:has(dialog[open]) {
     display: none;
   }
 }
+
+/* Scroll hint in the video modal: two chevrons rise in turn and the pill pulses. Static when motion is reduced. */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-hint {
+    animation: hint-pulse 1.4s ease-in-out infinite;
+  }
+  .scroll-hint svg {
+    animation: hint-rise 1.4s ease-in-out infinite;
+  }
+  .scroll-hint svg + svg {
+    animation-delay: 0.2s;
+  }
+}
+
+@keyframes hint-rise {
+  0%, 100% { transform: translateY(6px); opacity: 0.3; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+
+@keyframes hint-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0.45); }
+  50% { box-shadow: 0 0 0 10px rgb(255 255 255 / 0); }
+}
