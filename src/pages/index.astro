@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import { parseVideo } from "../lib/video";
-import { CATEGORIES, CTA_HREF, CTA_TEXT, HOOK_1, HOOK_2, REEL, REEL_POSTER } from "../lib/site";
+import { ABOUT_LINE, CATEGORIES, CTA_TEXT, SERVICES, HOOK_1, HOOK_2, REEL, REEL_POSTER } from "../lib/site";
 
 const work = (await getCollection("work")).sort((a, b) => a.data.order - b.data.order);
 // Only offer a chip for categories that have at least one project.
@@ -37,7 +37,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
           {HOOK_2.after}
         </span>
       </h1>
-      <a href={CTA_HREF} class="group mt-10 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 font-bold text-black hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+      <a href="#contact" class="group mt-10 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 font-bold text-black hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
         {CTA_TEXT}
         {/* Lucide arrow-right, inlined like the theme icons. */}
         <svg class="h-5 w-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -91,6 +91,27 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
         </a>
       ))
     }
+  </section>
+
+  {/* What I offer: one bio line and the confirmed services, edited in src/lib/site.ts. */}
+  <section id="about" class="mt-24 scroll-mt-20 px-5 md:pr-14">
+    <div class="border-y-2 border-fg py-10 md:py-14">
+      <h2 class="text-balance text-3xl font-bold leading-tight md:text-5xl">
+        What I can do for your <span class="bg-[#7c6fe0] px-2 text-white [box-decoration-break:clone]">content</span>
+      </h2>
+      <p class="mt-5 max-w-xl text-muted">{ABOUT_LINE}</p>
+      <ul class="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+        {
+          SERVICES.map((s, i) => (
+            <li>
+              <span class="font-mono text-sm text-muted">{String(i + 1).padStart(2, "0")}</span>
+              <h3 class="mt-1 text-xl font-bold">{s.title}</h3>
+              <p class="mt-2 max-w-md text-muted">{s.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </section>
 
   {/* Video modal. The native dialog gives focus trapping and Esc for free; the backdrop is the blur. */}

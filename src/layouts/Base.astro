@@ -58,8 +58,7 @@ const graph = {
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/darcoded.ico" sizes="any" />
-    <link rel="icon" type="image/png" href="/darcoded-32.png" />
+    <link rel="icon" type="image/svg+xml" href="/darcoded-monogram-white.svg" />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="describedby" href="/llms.txt" type="text/plain" />
     {/* Videos play from Drive, so open that connection early. */}
@@ -92,7 +91,8 @@ const graph = {
       </a>
       <nav class="flex items-center gap-4 text-muted md:gap-8">
         <a href="/#filters" class="hover:text-fg">Work</a>
-        <a href={MAIN_SITE_URL} class="hover:text-fg">About</a>
+        <a href="/#about" class="hover:text-fg">About</a>
+        <a href="#contact" class="hover:text-fg">Contact</a>
         {/* Same Sun and Moon icons (lucide, stroke 1.8) as the main portfolio, inlined so no icon library ships. */}
         <button id="theme-toggle" type="button" aria-label="Switch theme" class="hover:text-fg focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-accent">
           <svg class="show-dark h-5 w-5 md:h-7 md:w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

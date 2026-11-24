@@ -13,6 +13,17 @@ export const DESCRIPTION = "Portfolio of Darwin Iquiña, a video editor. Selecte
 export const HOOK_1 = { before: "Your content deserves", mark: "attention", after: "." };
 export const HOOK_2 = { before: "I make", mark: "every second", after: "count." };
 
+// "What I offer" section on the home page. Keep it to services Darwin confirmed; no results or client claims.
+export const ABOUT_LINE = "I help creators, coaches and brands turn raw footage into engaging short-form videos that capture attention, keep viewers watching and make your content stand out.";
+export const SERVICES = [
+  { title: "High-retention reels and shorts", text: "Clean, engaging edits with strategic cuts, dynamic captions and b-roll that keep viewers interested from start to finish." },
+  { title: "UGC and product ads", text: "Scroll-stopping product videos that showcase your offer, connect with potential customers and drive action." },
+  { title: "Captions and sound design", text: "Eye-catching animated captions, carefully timed sound effects and polished audio that make every video more engaging." },
+  { title: "Podcast and long-form repurposing", text: "Turn hours of podcasts, interviews and long-form content into multiple ready-to-post short videos." },
+  { title: "Coaching and educational content", text: "Professional, easy-to-follow videos that communicate your expertise, build credibility and make your message resonate." },
+  { title: "Custom editing and creative direction", text: "No cookie-cutter edits. I adapt pacing, visuals and editing style to match your brand, audience and content goals." },
+];
+
 // Wording stays open ("video", not "edit") because the work includes UGC-style content too.
 export const CTA_TEXT = "Let's work together";
 // Same Google Form as the main portfolio: a generic enquiry form that goes to the email inbox.
