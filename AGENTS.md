@@ -24,6 +24,10 @@ Video editing portfolio for Darwin Iquiña at `edits.darwiniquina.com`. Separate
 - Work is mostly vertical reels: cards and the project player are 9:16. A project's file name (slug) must match its preview files. Only `title` and `order` are required; add client, year, role, description and `videoUrl` only when confirmed.
 - Every project page needs real descriptive text, since crawlers cannot read video.
 
+## Adding a video
+
+Follow `ADD-PROJECT.md` (files to make, ffmpeg commands, checks) whenever a new edited video is added.
+
 ## Verify
 
 `npm run build` (runs `astro check` then `astro build`). Inspect `dist/` for titles, canonical URLs, JSON-LD, and `sitemap-index.xml`.
