@@ -129,6 +129,10 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       <h2 id="player-title" class="text-2xl font-bold md:text-3xl"></h2>
       <p id="player-meta" class="mt-2 text-muted"></p>
       <p id="player-desc" class="mt-4 max-w-prose"></p>
+      <div class="mt-6 flex max-w-prose gap-2">
+        <input id="share-url" readonly aria-label="Link to this video" class="min-w-0 flex-1 rounded-md border border-fg/20 bg-transparent px-3 py-2 text-sm" />
+        <button type="button" id="share-link" class="shrink-0 rounded-md bg-fg px-4 py-2 text-sm font-medium text-bg transition hover:opacity-80">Copy</button>
+      </div>
     </div>
     <button type="button" id="player-close" aria-label="Close video" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/15 text-white/50 transition hover:bg-black/50 hover:text-white md:group-data-[details]/dlg:bg-transparent md:group-data-[details]/dlg:text-fg md:group-data-[details]/dlg:hover:bg-fg/10">
       <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
@@ -347,6 +351,8 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       const embedOnly = !!embed && !file;
       if (first || embedOnly) dlg.toggleAttribute("data-details", embedOnly);
       syncCaps();
+      history.replaceState(null, "", `#${items[i].dataset.slug}`); // the address bar always holds this video's share link
+      (document.getElementById("share-url") as HTMLInputElement).value = location.href;
       // Details only show what is confirmed in the project file; empty ones are hidden.
       for (const key of ["title", "client", "meta", "desc"]) {
         const el = document.getElementById(`player-${key}`)!;
@@ -416,6 +422,7 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
       items = [];
       feed = undefined;
       active = -1;
+      history.replaceState(null, "", location.pathname + location.search);
       playing.forEach((v) => v.play().catch(() => {}));
       playing = [];
     };
@@ -427,6 +434,15 @@ const chips = Object.entries(CATEGORIES).filter(([key]) => work.some((w) => w.da
     document.getElementById("details-close")!.addEventListener("click", () => (dlg.removeAttribute("data-details"), syncCaps()));
     dlg.addEventListener("click", (e) => e.target === dlg && closeModal()); // click on the blur
     dlg.addEventListener("close", () => dlg.open || cleanup()); // a late event must not wipe a player opened since
+
+    // Share link: /#<slug> opens that video. Unknown slugs and other anchors (#about, #contact) are ignored.
+    const share = document.getElementById("share-link")!;
+    share.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(location.href).catch(() => {});
+      share.textContent = "Copied";
+      setTimeout(() => (share.textContent = "Copy"), 2000);
+    });
+    document.querySelector<HTMLAnchorElement>(`#work a[data-slug="${CSS.escape(location.hash.slice(1))}"]`)?.click();
   </script>
 
   <script>
