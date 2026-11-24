@@ -40,7 +40,7 @@ videoFile: "<slug>-v1.mp4"
 ---
 ```
 
-- `order` sets the home grid position (lowest first). Ties are allowed; check where the new one lands.
+- `order` sets the home grid position (lowest first). **New projects always go first**: set `order` to one less than the lowest `order` in `src/content/work/` (negative numbers are fine), so the newest video leads both All and its category. Find it with `grep -h "^order:" src/content/work/*.md | sort -t: -k2 -n | head -1`.
 - `category` is one of `ugc`, `talking-heads`, `real-estate`.
 - Write the description from the real transcript (for example `assets/final-asr.json` in the video project). Crawlers cannot read video.
 - Add `client`, `year`, `role` only when confirmed. Label personal and spec work clearly.

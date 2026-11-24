@@ -10,7 +10,7 @@ Video editing portfolio for Darwin Iquiña at `edits.darwiniquina.com`. Separate
 
 ## Where things live
 
-- Projects: `src/content/work/*.md` (schema in `src/content.config.ts`). Home grid order comes from `order`.
+- Projects: `src/content/work/*.md` (schema in `src/content.config.ts`). Home grid order comes from `order` (lowest first). A new project always takes the lowest `order` so it leads, see `ADD-PROJECT.md`.
 - Site constants (name, profile, reel, `INDEXABLE`): `src/lib/site.ts`.
 - Head, schema, canonical, robots meta: `src/layouts/Base.astro`.
 - Crawler files: `public/robots.txt`, `public/llms.txt` (manual). Sitemap is generated at build.
