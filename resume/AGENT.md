@@ -16,6 +16,7 @@ Steps:
 Hard rules:
 - Never invent clients, results, metrics, tools, dates or years of experience. Check `do_not_claim`.
 - Label personal and spec work as such.
+- Leave the phone number off unless Darwin asks for it (the repo is public).
 - No em dashes. Plain bullets. One column. No tables or icons.
 - If a needed fact is missing, ask Darwin instead of guessing.
 

@@ -47,6 +47,10 @@ Fill every {{placeholder}} from MASTER.yml. Remove this comment in the final fil
 {{Group 1 label}}: {{skill}}, {{skill}}, {{skill}}
 {{Group 2 label}}: {{skill}}, {{skill}}
 
+## Languages
+
+{{language}}, {{language}}
+
 ## Education
 
 {{degree}}, {{school}}, {{year}}

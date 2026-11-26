@@ -6,9 +6,10 @@
 profile:
   name: "Darwin Iquiña"
   alias: "darcoded"
-  email: "darwiniquina@gmail.com"   # TODO confirm this is the resume email
-  phone: "TODO"
-  location: "Philippines"            # TODO city
+  email: "darwiniquina@gmail.com"   # confirmed resume email
+  # Kept here just in case. Repo is public, so the agent leaves it off the resume unless Darwin asks.
+  phone: "09452607161"
+  location: "Quezon City, Philippines"
   links:
     editing_portfolio: "https://edits.darwiniquina.com"
     linkedin: "https://www.linkedin.com/in/darwin-iqui%C3%B1a-15561328b/"
@@ -31,11 +32,11 @@ summaries:
     footage into clear, watchable short videos.
 
 experience:
-  # Fill in once Darwin confirms the nature of the work.
-  - id: freelance-editing
-    company: "Self-employed"          # TODO confirm label: freelance, personal, spec
+  # Confirmed: a sideline and hobby since senior high school. Do not call it client work.
+  - id: sideline-editing
+    company: "Self-employed"
     title: "Video Editor"
-    start: "TODO"
+    start: "Since senior high school"   # exact year not given, do not state years of experience
     end: "present"
     tags: [short_form, ugc, talking_head]
     bullets:
@@ -65,18 +66,21 @@ skills:
     - "Sound design"
     - "Podcast repurposing"
     - "ffmpeg video compression"
-    # TODO editing software (for example CapCut, Premiere Pro, DaVinci Resolve), only what Darwin actually uses
+  tools:
+    - "Filmcraft"                       # spelling confirmed
+    - "Photoshop"
+    - "Self-built editing application"
 
 education:
   - school: "STI College Fairview"
     degree: "Bachelor of Science in Information Technology"
     end: "2023"
 
-certifications: []                    # TODO add only real ones
+certifications: []                    # none for editing for now, omit the section
 
-languages:
-  - "TODO English"
-  - "TODO Filipino"
+languages:                            # no proficiency levels given, do not add any
+  - "English"
+  - "Filipino"
 
 # Facts the agent must never state unless added above.
 do_not_claim:

@@ -2,7 +2,7 @@
 
 Video editor for short-form reels, UGC and talking-head content
 
-darwiniquina@gmail.com | Philippines
+darwiniquina@gmail.com | 09452607161 | Quezon City, Philippines
 edits.darwiniquina.com | linkedin.com/in/darwin-iquiña-15561328b
 
 ## Summary
@@ -12,7 +12,7 @@ Video editor who turns raw footage into short-form reels, UGC product videos and
 ## Experience
 
 ### Video Editor, Self-employed
-(dates to confirm)
+Since senior high school - present
 
 - Edit vertical short-form reels, UGC product videos and talking-head videos.
 - Add animated captions, sound effects, b-roll and strategic cuts to keep pacing tight.
@@ -28,7 +28,11 @@ edits.darwiniquina.com
 ## Skills
 
 Editing: Short-form reels, UGC product videos, talking-head editing, animated captions, sound design, podcast repurposing, ffmpeg compression
-Tools: (editing software to confirm)
+Tools: Filmcraft, Photoshop, self-built editing application
+
+## Languages
+
+English, Filipino
 
 ## Education
 
