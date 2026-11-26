@@ -1,0 +1,87 @@
+# Master resume data for Darwin Iquiña, video editing only. Single source of truth.
+# Rules for editing: add a fact only once it is confirmed. Unknowns stay as TODO.
+# Never use em dashes. Keep bullets factual, no invented clients, results or metrics.
+# Software engineering history lives in the main portfolio context, not here.
+
+profile:
+  name: "Darwin Iquiña"
+  alias: "darcoded"
+  email: "darwiniquina@gmail.com"   # TODO confirm this is the resume email
+  phone: "TODO"
+  location: "Philippines"            # TODO city
+  links:
+    editing_portfolio: "https://edits.darwiniquina.com"
+    linkedin: "https://www.linkedin.com/in/darwin-iqui%C3%B1a-15561328b/"
+
+# The agent picks one headline and adapts it to the job.
+headlines:
+  short_form: "Video editor for short-form reels, UGC and talking-head content"
+  ugc: "UGC and product video editor for short-form ads"
+  talking_head: "Talking-head and coaching content editor"
+
+summaries:
+  short_form: >-
+    Video editor who turns raw footage into short-form reels, UGC product videos and
+    talking-head content with tight pacing, animated captions and clean sound.
+  ugc: >-
+    Video editor focused on UGC and product videos that hold attention and show the
+    offer clearly in vertical format.
+  talking_head: >-
+    Video editor for talking-head, coaching and educational content, cutting long
+    footage into clear, watchable short videos.
+
+experience:
+  # Fill in once Darwin confirms the nature of the work.
+  - id: freelance-editing
+    company: "Self-employed"          # TODO confirm label: freelance, personal, spec
+    title: "Video Editor"
+    start: "TODO"
+    end: "present"
+    tags: [short_form, ugc, talking_head]
+    bullets:
+      - text: "Edit vertical short-form reels, UGC product videos and talking-head videos."
+        tags: [short_form, ugc, talking_head]
+      - text: "Add animated captions, sound effects, b-roll and strategic cuts to keep pacing tight."
+        tags: [short_form, ugc, talking_head]
+      - text: "Repurpose long-form and podcast footage into short videos."
+        tags: [short_form, talking_head]
+
+projects:
+  - id: edits-portfolio
+    name: "Video editing portfolio"
+    url: "https://edits.darwiniquina.com"
+    tags: [short_form, ugc, talking_head]
+    # Work type must be stated honestly. TODO confirm which items are client, personal or spec.
+    description: "Portfolio of vertical short-form edits across UGC product videos, talking-head reels and one real estate reel."
+    categories: [ugc, talking-heads, real-estate]
+    source: "src/content/work/*.md in this repo"
+
+skills:
+  editing:
+    - "Short-form reels"
+    - "UGC product videos"
+    - "Talking-head editing"
+    - "Animated captions"
+    - "Sound design"
+    - "Podcast repurposing"
+    - "ffmpeg video compression"
+    # TODO editing software (for example CapCut, Premiere Pro, DaVinci Resolve), only what Darwin actually uses
+
+education:
+  - school: "STI College Fairview"
+    degree: "Bachelor of Science in Information Technology"
+    end: "2023"
+
+certifications: []                    # TODO add only real ones
+
+languages:
+  - "TODO English"
+  - "TODO Filipino"
+
+# Facts the agent must never state unless added above.
+do_not_claim:
+  - "Named clients, brands or agencies"
+  - "View counts, revenue or other results"
+  - "Years of video editing experience"
+  - "Tools not listed in skills"
+  - "Client work when the item is personal or spec"
